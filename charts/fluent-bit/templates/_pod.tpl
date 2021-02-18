@@ -13,12 +13,19 @@ securityContext:
 dnsConfig:
   {{- toYaml . | nindent 2 }}
 {{- end }}
+{{- if .Values.initContainers }}
+initContainers: {{ toYaml .Values.initContainers | nindent 2 }}
+{{- end }}
 containers:
   - name: {{ .Chart.Name }}
     securityContext:
       {{- toYaml .Values.securityContext | nindent 6 }}
     image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
     imagePullPolicy: {{ .Values.image.pullPolicy }}
+  {{- if .Values.command }}
+    command:
+    {{- toYaml .Values.command | nindent 4 }}
+  {{- end }}
   {{- if .Values.env }}
     env:
     {{- toYaml .Values.env | nindent 4 }}
